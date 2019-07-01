@@ -1,0 +1,24 @@
+EventCode,EventDescription,action
+1,"Process Created",started
+2,"File Create Time Changed",modified
+3,"Network Connect",allowed
+4,"Sysmon Started or Stopped",allowed
+5,"Process Terminated",stopped
+6,"Driver Loaded",allowed
+7,"Image Loaded",allowed
+8,"Create Remote Thread",allowed
+9,"Raw Access Read",read
+10,"Process Access",allowed
+11,"File Created",created
+12,"Registry object added or deleted",modified
+13,"Registry value set",modified
+14,"Registry object renamed",renamed
+15,"File stream created",created
+16,"Sysmon Configuration Changed",modified
+17,"Pipe Created",created
+18,"Pipe Connected",allowed
+19,"WmiEventFilter registered",created
+20,"WmiEventConsumer registered",created
+21,"WmiEventConsumer binds to WmiEventFilter",allowed
+22,"DNS query",allowed
+255,"Error",alert

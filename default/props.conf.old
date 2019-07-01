@@ -1,0 +1,141 @@
+# Raw Sysmon data from WinEventLog input.
+# Original sourcetype = XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+# For the new events, we will pack the _raw format and set sourcetype to sysmon:events or sysmon:events:*.
+#  The source will be set to sysmon:wineventlog to avoid Windows TA touching it (speed optimization).
+# For backwards compatibility, we'll parse the fields in search time here as well.
+[XmlWinEventLog:Microsoft-Windows-Sysmon/Operational]
+priority = 100
+TRANSFORMS-sysmon-change-format = sysmon-set-source, sysmon-shorten-data, sysmon-blacklist-dns, sysmon-set-sourcetype, sysmon-set-st-1, sysmon-set-st-2, sysmon-set-st-3, sysmon-set-st-4, sysmon-set-st-5, sysmon-set-st-6, sysmon-set-st-7, sysmon-set-st-8, sysmon-set-st-9, sysmon-set-st-10, sysmon-set-st-11, sysmon-set-st-12, sysmon-set-st-13, sysmon-set-st-14, sysmon-set-st-15, sysmon-set-st-16, sysmon-set-st-17, sysmon-set-st-18, sysmon-set-st-19, sysmon-set-st-20, sysmon-set-st-21, sysmon-set-st-22, sysmon-set-st-255
+REPORT-sysmon-header = sysmon-evth-eventid,sysmon-evth-version,sysmon-evth-level,sysmon-evth-task,sysmon-evth-opcode,sysmon-evth-keywords,sysmon-evth-created,sysmon-evth-record,sysmon-evth-correlation,sysmon-evth-channel,sysmon-evth-computer,sysmon-evth-sid
+REPORT-sysmon-info = sysmon-data,sysmon-md5,sysmon-sha1,sysmon-sha256,sysmon-imphash,sysmon-hashes,sysmon-filename,sysmon-registry
+#SEDCMD-date = s/(.*)<Data Name='UtcTime'>2019-05-02 16:36:03.336<\/Data>(.*)/
+TIME_PREFIX = Data Name=.UtcTime.>
+TZ = UTC
+MAX_TIMESTAMP_LOOKAHEAD = 40
+SHOULD_LINEMERGE = false
+ANNOTATE_PUNCT = false
+LEARN_SOURCETYPE = false
+# search optimizations:
+AUTO_KV_JSON = false
+KV_MODE = none
+
+
+# Parse packed Sysmon data.
+# sourcetype = sysmon:events and sysmon:events:*
+# source = sysmon:wineventlog
+[(?::){0}sysmon:events*]
+REPORT-sysmon-header = sysmon-signatureid
+REPORT-sysmon-info = sysmon-data,sysmon-md5,sysmon-sha1,sysmon-sha256,sysmon-imphash,sysmon-hashes,sysmon-filename,sysmon-registry
+
+FIELDALIAS-src_ip = SourceIp AS src_ip
+FIELDALIAS-src_host = SourceHostname AS src_host
+EVAL-src = if(isnotnull(SourceHostname),SourceHostname,SourceIp)
+FIELDALIAS-src_port = SourcePort AS src_port
+FIELDALIAS-app-sourceimage = SourceImage AS app
+FIELDALIAS-app = Image AS app
+FIELDALIAS-dest_ip = DestinationIp AS dest_ip
+FIELDALIAS-dest_host = DestinationHostname AS dest_host
+EVAL-dest = case(EventCode=="3" AND isnotnull(DestinationHostname),DestinationHostname,EventCode=="3",DestinationIp,EventCode=="1" OR EventCode == "11" OR EventCode == "12" OR EventCode == "13" OR EventCode == "14", Computer)
+FIELDALIAS-dest_port = DestinationPort AS dest_port
+FIELDALIAS-dest_ptr = DestinationHostname as dest_ptr
+EVAL-direction = if(Initiated=="true","outbound","inbound")
+FIELDALIAS-dvc = Computer AS dvc
+FIELDALIAS-transport = Protocol AS transport
+EVAL-protocol = if(Initiated=="true",DestinationPortName,SourcePortName)
+FIELDALIAS-session_id = ProcessGuid AS session_id
+EVAL-vendor_product = "Microsoft Sysmon"
+FIELDALIAS-cmdline = CommandLine AS cmdline
+
+#Common fieldnames for Registry, Process, FileSystem Node in Endpoint Datamodel
+EVAL-action = case(EventCode=="1","allowed",EventCode=="12" AND EventType=="CreateKey","created",EventCode=="12" AND (EventType=="DeleteKey" OR EventType=="DeleteValue") ,"deleted",EventCode=="13" AND EventType=="SetValue","modified",EventCode=="11" AND EventDescription=="File Created","created")
+
+#Ports Node
+EVAL-creation_time = case(EventCode=="3",UtcTime)
+EVAL-state = case(EventCode=="3", "listening")
+
+
+#Processes Node
+EVAL-parent_process_exec = case(EventCode=="1" OR EventCode=="2" OR EventCode=="3" OR EventCode=="5" OR EventCode=="7" OR EventCode=="9" OR EventCode=="11" OR EventCode=="12" OR EventCode=="13" OR EventCode=="14" OR EventCode=="15" OR EventCode=="17" OR EventCode=="18", replace(ParentImage,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),1==1,"")
+FIELDALIAS-parent_process_id = ParentProcessId AS parent_process_id
+FIELDALIAS-parent_process_guid = ParentProcessGuid AS parent_process_guid
+FIELDALIAS-parent_process_path = ParentImage AS parent_process_path
+FIELDALIAS-process_current_directory = CurrentDirectory AS process_current_directory
+EVAL-process_exec = case(EventCode=="1" OR EventCode=="2" OR EventCode=="3" OR EventCode=="5" OR EventCode=="7" OR EventCode=="9" OR EventCode=="11" OR EventCode=="12" OR EventCode=="13" OR EventCode=="14" OR EventCode=="15" OR EventCode=="17" OR EventCode=="18", replace(Image,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),EventCode=="6","System",EventCode=="8" OR EventCode=="10",replace(SourceImage,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),1==1,"")
+FIELDALIAS-process_hash = Hashes AS process_hash
+FIELDALIAS-process_guid = ProcessGuid AS process_guid
+FIELDALIAS-process_id = ProcessId AS process_id
+FIELDALIAS-process_integrity_level = IntegrityLevel AS process_integrity_level
+FIELDALIAS-process_path = Image AS process_path
+FIELDALIAS-user_id = UserID AS user_id
+FIELDALIAS-user = User AS user
+EVAL-process_name = case(EventCode=="1" OR EventCode=="2" OR EventCode=="3" OR EventCode=="5" OR EventCode=="7" OR EventCode=="9" OR EventCode=="11" OR EventCode=="12" OR EventCode=="13" OR EventCode=="14" OR EventCode=="15" OR EventCode=="17" OR EventCode=="18", replace(Image,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),EventCode=="6","System",EventCode=="8" OR EventCode=="10",replace(SourceImage,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),1==1,"")
+
+#Filesystem Node
+FIELDALIAS-file_path = TargetFilename AS file_path
+FIELDALIAS-file_create_time = CreationUtcTime AS file_create_time
+
+#Fields for ChangeAnalysis DM (old field names)
+EVAL-object_category = case(EventCode=="11" OR EventCode=="2", "file", EventCode=="12" OR EventCode=="13" OR EventCode="14", "registry", EventCode=="19" OR EventCode=="20" OR EventCode="21", "wmi")
+EVAL-object_path = case(EventCode=="12" OR EventCode=="13", TargetObject, EventCode=="14", NewName)
+LOOKUP-eventcode = eventcode EventCode OUTPUTNEW EventDescription EventDescription AS signature
+FIELDALIAS-signature_id = EventCode AS signature_id
+FIELDALIAS-eventid = EventCode AS EventID
+
+
+#Registry Node
+EVAL-registry_path = case(EventCode=="12" OR EventCode=="13" OR EventCode=="14", TargetObject)
+EVAL-registry_value_name = case(EventCode=="13", Details)
+EVAL-registry_key_name = case(EventCode=="12" OR EventCode=="13" OR EventCode=="14",replace(TargetObject,".+\\\\",""))
+
+# custom
+EXTRACT-sysmon_version = <EventData>.*?<Data Name='Version'>(?<product_version>[^<]+)</Data>
+REPORT-sysmon-info-custom = sysmon-process-params,sysmon-process-path,sysmon-parent-process-image,sysmon-parent-process-params,sysmon-parent-process-name,sysmon-target-process,sysmon-target-process-name,sysmon-source-image,sysmon-imageloaded-file-name-path,sysmon-target-file-path-name,sysmon-registry-path,sysmon-target-start-module,sysmon-process-name
+FIELDALIAS-sysmon_service_id_alias = ProcessId AS service_id
+FIELDALIAS-sysmon_CommandLine_alias = CommandLine AS command
+FIELDALIAS-object_path = file_path AS object_path
+FIELDALIAS-integrity_level = IntegrityLevel AS process_integrity_level
+FIELDALIAS-cwd = CurrentDirectory AS cwd
+FIELDALIAS-logon-id = LogonGuid AS logon_guid LogonId AS logon_id
+FIELDALIAS-terminal_id = TerminalSessionId AS terminal_id
+FIELDALIAS-file_version = FileVersion as file_version
+FIELDALIAS-file_description = Description as file_description
+FIELDALIAS-file_company = Company as file_company
+FIELDALIAS-file_product = Product as file_product
+FIELDALIAS-file_signature = Signature AS file_signature
+FIELDALIAS-create-remote-thread = NewThreadId AS target_new_thread_id StartAddress AS target_start_address StartFunction AS target_start_function StartModule AS target_start_module TargetProcessGuid AS target_process_guid TargetProcessId AS target_process_id
+FIELDALIAS-parent-process = ParentImage AS parent_process_image ParentProcessGuid AS parent_process_guid ParentProcessId AS parent_process_id
+FIELDALIAS-target_process_image = TargetImage as target_process_image
+EVAL-process_guid = coalesce(ProcessGuid, SourceProcessGuid)
+EVAL-process_id = coalesce(ProcessId, SourceProcessId)
+EVAL-action = case(EventCode==5, "blocked", EventCode==11, "created", EventCode==12, case(EventType=="DeleteValue", "deleted", EventType=="CreateKey", "created", 1==1, "unknown"), EventCode==13, "modified", EventCode==14, "renamed", 1==1, "allowed")
+EVAL-status = "success"
+#EVAL-registry_path = if(EventCode!=13, registry_path, replace(registry_path, "\\[^\\]+$", ""))
+#EVAL-registry_key_name = if(EventCode!=13, registry_key_name, replace(registry_path, "^.*\\", ""))
+#EVAL-registry_value_name =
+EVAL-registry_path = if(EventCode==13, registry_path, registry_path . registry_key_name)
+EVAL-registry_key_name = if(EventCode==13, registry_key_name, registry_value_name)
+EVAL-registry_value_name = if(EventCode==13, registry_value_name, null())
+EVAL-registry_value_data = if(EventCode==13, Details, null())
+#EVAL-registry_value_type = if(EventCode!=13, null(), if(match(Details, "^DWORD \("), "REG_DWORD", "unknown")
+EVAL-object_path = case(EventCode=="12" OR EventCode=="13", TargetObject, EventCode=="14", NewName, EventCode=="11", TargetFilename)
+EVAL-object = coalesce(object, case(EventCode=="12" OR EventCode=="13", TargetObject, EventCode=="14", NewName, EventCode=="11", TargetFilename))
+EVAL-SHA256 = lower(SHA256)
+EVAL-SHA512 = lower(SHA512)
+EVAL-IMPHASH = lower(IMPHASH)
+EVAL-MD5 = lower(MD5)
+EVAL-SHA1 = lower(SHA1)
+#EVAL-process_name = replace(replace( replace(   case(EventCode=="1" OR EventCode=="2" OR EventCode=="3" OR EventCode=="5" OR EventCode=="7" OR EventCode=="9" OR EventCode=="11" OR EventCode=="12" OR EventCode=="13" OR EventCode=="14" OR EventCode=="15" OR EventCode=="17" OR EventCode=="18", replace(Image,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),EventCode=="6","System",EventCode=="8" OR EventCode=="10",replace(SourceImage,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),1==1,"")   , "\.[^.]+$", "") , "&lt;", "<"), "&gt;", ">")
+EVAL-process_params = replace(replace(process_params, "&lt;", "<"), "&gt;", ">")
+EVAL-parent_process_params = replace(replace(parent_process_params, "&lt;", "<"), "&gt;", ">")
+EVAL-app = replace(replace(coalesce(Image, SourceImage), "&lt;", "<"), "&gt;", ">")
+EVAL-process_image = replace(replace(coalesce(Image, SourceImage), "&lt;", "<"), "&gt;", ">")
+EVAL-Image = replace(replace(Image, "&lt;", "<"), "&gt;", ">")
+EVAL-process = coalesce(replace(replace(process, "&lt;", "<"), "&gt;", ">"), if(EventCode=="6","System",null()))
+#EVAL-process = replace(replace( case(EventCode=="1" OR EventCode=="2" OR EventCode=="3" OR EventCode=="5" OR EventCode=="7" OR EventCode=="9" OR EventCode=="11" OR EventCode=="12" OR EventCode=="13" OR EventCode=="14" OR EventCode=="15" OR EventCode=="17" OR EventCode=="18", replace(Image,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),EventCode=="6","System",EventCode=="8" OR EventCode=="10",replace(SourceImage,"(.*\\\)(?=.*(\.\w*)$|(\w+)$)",""),1==1,"") , "&lt;", "<"), "&gt;", ">")
+EVAL-parent_process_id = parent_process_id
+EVAL-file_signature_status = case(EventCode!=6 AND EventCode!=7, null(), match(Signed, "Failed to open"), "open_failed", SignatureStatus=="?", "unknown", 1==1, coalesce(lower(SignatureStatus), "unknown"))
+EVAL-file_signature_valid = case(EventCode!=6 AND EventCode!=7, null(), match(Signed, "failed"), "unknown", Signed=="true" AND SignatureStatus=="Valid", "true", 1==1, "false")
+EVAL-file_path = file_path
+EVAL-process_path = if(isnotnull(process), coalesce(process_path, ""), process_path)
+FIELDALIAS-initiated = Initiated AS initiated
+FIELDALIAS-state-and-schema-version = SchemaVersion AS schema_version State AS state

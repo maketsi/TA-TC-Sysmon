@@ -1,0 +1,4 @@
+EventCode,EventType,action
+12,CreateKey,created
+12,DeleteKey,deleted
+12,DeleteValue,deleted
