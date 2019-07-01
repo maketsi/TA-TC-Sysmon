@@ -7,6 +7,14 @@ This addon is a complete rewrite and replacement of TA-Microsoft-Sysmon [1] and 
 * index-time operation that removes the extra (and static) header garbage caused by WinEventLog input, that does not provide any value for sysmon logs, saving up to 50% of license usage and I/O load.
 * index-time sourcetyping to further optimize and categorize the events (sourcetype=sysmon:events:*)
 
+
+## TA-TC-Sysmon-Transforms
+
+This is a supplemental package for TA-TC-Sysmon, providing index-time transforms. This should be placed on heavy forwarders or indexers,
+which ever receives the traffic first.
+
+The parent package TA-TC-Sysmon contains the search-time knowledge objects, and is meant to be placed in search heads.
+
 Original events are expected to have sourcetype XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
 
 
@@ -20,7 +28,7 @@ This is mostly compatible with Splunk CIM framework, with the following exceptio
 
 ## Sourcetypes
 
-If this addon is installed on HF/indexers, the following sourcetypes will be created:
+If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (recommended), the following sourcetypes will be created:
 
 * EventID 1: "sysmon:events:processcreated"
 * EventID 2: "sysmon:events:filectimechanged"
@@ -45,6 +53,7 @@ If this addon is installed on HF/indexers, the following sourcetypes will be cre
 * EventID 21: "sysmon:events:wmiconsumerbindfilter"
 * EventID 22: "sysmon:events:dnsquery"
 * EventID 255: "sysmon:events:error"
+* All the rest (new unknowns): "sysmon:events"
 
 The addon works also with legacy data, with and without the Windows TA.
 
