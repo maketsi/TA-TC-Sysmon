@@ -2,3 +2,5 @@
 *.bak
 local/*
 metadata/local.meta
+*.tgz
+
