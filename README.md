@@ -2,20 +2,21 @@
 
 This addon is a complete rewrite and replacement of TA-Microsoft-Sysmon [1] and adds:
 
-* speed-optimized searches via custom eventtypes and macros (tc_sysmon*) that are not just based on (slow) EventID based searches.
-* workarounds that protect from props hijack done by Splunk_TA_windows 6.0.0, avoiding sourcetype rename and processing of generic wineventlog props (providing no value).
-* index-time operation that removes the extra (and static) header garbage caused by WinEventLog input, that does not provide any value for sysmon logs, saving up to 50% of license usage and I/O load.
-* index-time sourcetyping to further optimize and categorize the events (sourcetype=sysmon:events:*)
+* speed-optimized searches via custom eventtypes and macros (tc_sysmon*) that are not just based on (very slow) EventID based searches. 
+* workarounds that protect from props hijack done by Splunk_TA_windows 6.0.0, avoiding sourcetype rename and further extra processing of generic wineventlog props (providing no value).
+* index-time operation that removes the extra (and static) header garbage caused by WinEventLog input that does not provide any value for sysmon logs, saving up to 50% of license usage and I/O load. (*)
+* index-time sourcetyping to further optimize and categorize the events to sourcetype=sysmon:events:*
 
 
-## TA-TC-Sysmon-Transforms
+## Relation to TA-TC-Sysmon-Transforms
 
-This is a supplemental package for TA-TC-Sysmon, providing index-time transforms. This should be placed on heavy forwarders or indexers,
-which ever receives the traffic first.
+All index-time operations mentioned above are optional, allthough recommended, and have been moved to (minimized) TA-TC-Sysmon-Transforms package, to be placed on heavy forwarders or indexers, which ever receives the traffic first from agents.
 
 The parent package TA-TC-Sysmon contains the search-time knowledge objects, and is meant to be placed in search heads.
 
 Original events are expected to have sourcetype XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+
+If the index-time operations are not done, this package will rename the sourcetype to sysmon:events, for optimization reasons.
 
 
 ## Compatibility with Splunk CIM 
@@ -62,19 +63,24 @@ The addon works also with legacy data, with and without the Windows TA.
 
 These macros will efficiently search for the data and are not just based on signature_id/EventID search:
 
-* `tc_sysmon`
-* `tc_sysmon_process_created`
-* `tc_sysmon_process_terminated`
-* `tc_sysmon_image_loaded`
+* \`tc_sysmon\`
+* \`tc_sysmon_process_created\`
+* \`tc_sysmon_process_terminated\`
+* \`tc_sysmon_image_loaded\`
 * etc.
 
 Example usage:
 
-* `tc_sysmon` host=foobar 
+* \`tc_sysmon\` host=foobar 
 
-These macros search sysmon data from all indexes by default. It is possible to further optimize these by explicitly setting the
-index(es) to use in `tc_sysmon_indexes` macro, or by changing it to use a lookup that automatically generates
-the index list via tstats in advance. TODO: provide instructions on how to do that.
+These macros search sysmon data from all indexes by default. It is recommended to further optimize these by explicitly setting the
+index(es) to use in \`tc_sysmon_indexes\` macro, or by changing it to use a lookup that automatically generates
+the index list via tstats in advance. 
+
+
+## TODO
+
+Documentation.
 
 
 ## Author
@@ -82,6 +88,6 @@ the index list via tstats in advance. TODO: provide instructions on how to do th
 Markku Parviainen, 2019
 
 
-## References
+## References and thanks to
 
 [1] https://github.com/splunk/TA-microsoft-sysmon
