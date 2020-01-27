@@ -3,4 +3,5 @@
 local/*
 metadata/local.meta
 *.tgz
-
+*.old
+*.off
