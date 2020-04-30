@@ -8,6 +8,11 @@ This addon is a complete rewrite and replacement of TA-Microsoft-Sysmon [1] and 
 * index-time sourcetyping to further optimize and categorize the events to sourcetype=sysmon:events:*
 
 
+## Sysmon support
+
+This addon is up-to-date with Sysmon 11.0, supporting all its event types. Further upgrades are needed if new event IDs are introduced.
+
+
 ## Relation to TA-TC-Sysmon-Transforms
 
 All index-time operations mentioned above are optional, allthough recommended, and have been moved to (minimized) TA-TC-Sysmon-Transforms package, to be placed on heavy forwarders or indexers, which ever receives the traffic first from agents.
@@ -53,6 +58,7 @@ If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (r
 * EventID 20: "sysmon:events:wmiconsumerregistered"
 * EventID 21: "sysmon:events:wmiconsumerbindfilter"
 * EventID 22: "sysmon:events:dnsquery"
+* EventID 23: "sysmon:events:filedeleted"
 * EventID 255: "sysmon:events:error"
 * All the rest (new unknowns): "sysmon:events"
 
@@ -85,7 +91,7 @@ Documentation.
 
 ## Author
 
-Markku Parviainen, 2019
+Markku Parviainen, 2019-2020
 
 
 ## References and thanks to
