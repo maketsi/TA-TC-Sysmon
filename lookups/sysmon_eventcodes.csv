@@ -22,4 +22,5 @@ EventCode,EventDescription,action
 21,"WmiEventConsumer binds to WmiEventFilter",allowed
 22,"DNS query",allowed
 23,"File deleted",deleted
+24,"Clipboard changed",modified
 255,"Error",alert
