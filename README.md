@@ -59,6 +59,7 @@ If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (r
 * EventID 21: "sysmon:events:wmiconsumerbindfilter"
 * EventID 22: "sysmon:events:dnsquery"
 * EventID 23: "sysmon:events:filedeleted"
+* EventID 24: "sysmon:events:clipboardchanged"
 * EventID 255: "sysmon:events:error"
 * All the rest (new unknowns): "sysmon:events"
 
