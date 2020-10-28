@@ -1,0 +1,8 @@
+signature_id,reply_code_id,action,signature
+22,0,success,DNS query
+22,9002,failure,DNS query failed - server failure
+22,9003,failure,DNS query failed - name does not exist
+22,9004,failure,DNS query failed - request not supported by name server
+22,9005,failure,DNS query failed - refused
+22,1460,failure,DNS query timeout
+22,*,failure,DNS query failed
