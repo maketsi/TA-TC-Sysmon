@@ -1,8 +1,33 @@
 signature_id,reply_code_id,action,signature
 22,0,success,DNS query
+22,5,failure,DNS query failed - Access is denied
+22,8,failure,DNS query failed - Not enough memory
+22,13,failure,DNS query failed - Invalid  data
+22,14,failure,DNS query failed - Out of memory
+22,53,failure,DNS query failed - Network path not found
+22,64,failure,DNS query failed - Network name deleted
+22,123,failure,DNS query failed - Invalid name syntax
+22,1214,failure,DNS query failed - Invalid name format
+22,1223,failure,DNS query failed - Cancelled by user
+22,1225,failure,DNS query failed - Network connection refused
+22,1231,failure,DNS query failed - Network unreachable
+22,1232,failure,DNS query failed - Network host unreachable
+22,1236,failure,DNS query failed - Connection aborted
+22,1460,failure,DNS query failed - timeout period expired
+22,4312,failure,DNS query failed - Object not found
+22,9001,failure,DNS query failed - server unable to interpret format
 22,9002,failure,DNS query failed - server failure
 22,9003,failure,DNS query failed - name does not exist
 22,9004,failure,DNS query failed - request not supported by name server
 22,9005,failure,DNS query failed - refused
-22,1460,failure,DNS query timeout
+22,9501,failure,DNS query failed - no records found
+22,9502,failure,DNS query failed - bad packet
+22,9560,failure,DNS query failed - name contains an invalid character
+22,9701,failure,DNS query failed - record does not exist
+22,9702,failure,DNS query failed - record format error
+22,9852,failure,DNS query failed - no DNS servers configured for local system
+22,10022,failure,DNS query failed - invalid argument supplied
+22,10051,failure,DNS query failed - network unreachable
+22,10054,failure,DNS query failed - connection closed by remote host
+22,10060,failure,DNS query failed - timeout waiting for response
 22,*,failure,DNS query failed
