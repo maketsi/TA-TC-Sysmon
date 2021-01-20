@@ -10,7 +10,7 @@ This addon is a complete rewrite and replacement of TA-Microsoft-Sysmon [1] and 
 
 ## Sysmon support
 
-This addon is up-to-date with Sysmon 11.0, supporting all its event types. Further upgrades are needed if new event IDs are introduced.
+This addon is up-to-date with Sysmon 13.0, supporting all its event types. Further upgrades are needed if new event IDs are introduced.
 
 
 ## Relation to TA-TC-Sysmon-Transforms
@@ -60,6 +60,7 @@ If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (r
 * EventID 22: "sysmon:events:dnsquery"
 * EventID 23: "sysmon:events:filedeleted"
 * EventID 24: "sysmon:events:clipboardchanged"
+* EventID 25: "sysmon:events:processtampering"
 * EventID 255: "sysmon:events:error"
 * All the rest (new unknowns): "sysmon:events"
 
@@ -87,7 +88,7 @@ the index list via tstats in advance.
 
 ## TODO
 
-Documentation.
+More documentation?
 
 
 ## Author
@@ -98,3 +99,5 @@ Markku Parviainen, 2019-2020
 ## References and thanks to
 
 [1] https://github.com/splunk/TA-microsoft-sysmon
+
+DNS response code signatures are based on https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
