@@ -21,7 +21,7 @@ The parent package TA-TC-Sysmon contains the search-time knowledge objects, and 
 
 Original events are expected to have sourcetype XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
 
-If the index-time operations are not done, this package will rename the sourcetype to sysmon:events, for optimization reasons.
+If the index-time transform is not done, this package will rename the sourcetype locally to sysmon:events, for optimization reasons.
 
 
 ## Compatibility with Splunk CIM 
@@ -69,13 +69,36 @@ The addon works also with legacy data, with and without the Windows TA.
 
 ## Macros
 
-These macros will efficiently search for the data and are not just based on signature_id/EventID search:
+These macros will efficiently search for the data and are not just based on slow signature_id/EventID search:
 
 * \`tc_sysmon\`
 * \`tc_sysmon_process_created\`
+* \`tc_sysmon_file_ctime_changed\`
+* \`tc_sysmon_network_connect\`
+* \`tc_sysmon_state_changed\`
 * \`tc_sysmon_process_terminated\`
+* \`tc_sysmon_driver_loaded\`
 * \`tc_sysmon_image_loaded\`
-* etc.
+* \`tc_sysmon_create_remote_thread\`
+* \`tc_sysmon_raw_access_read\`
+* \`tc_sysmon_process_access\`
+* \`tc_sysmon_file_created\`
+* \`tc_sysmon_registry\`
+* \`tc_sysmon_registry_create_delete\`
+* \`tc_sysmon_registry_value_set\`
+* \`tc_sysmon_registry_rename\`
+* \`tc_sysmon_file_stream_created\`
+* \`tc_sysmon_configuration_changed\`
+* \`tc_sysmon_pipe_created\`
+* \`tc_sysmon_pipe_connected\`
+* \`tc_sysmon_wmi_filter_registered\`
+* \`tc_sysmon_wmi_consumer_registered\`
+* \`tc_sysmon_wmi_consumer_bind_filter\`
+* \`tc_sysmon_dns_query\`
+* \`tc_sysmon_file_deleted\`
+* \`tc_sysmon_clipboard_changed\`
+* \`tc_sysmon_process_tampering\`
+* \`tc_sysmon_error\`
 
 Example usage:
 
@@ -86,14 +109,10 @@ index(es) to use in \`tc_sysmon_indexes\` macro, or by changing it to use a look
 the index list via tstats in advance. 
 
 
-## TODO
-
-More documentation?
-
 
 ## Author
 
-Markku Parviainen, 2019-2020
+Markku Parviainen, 2019-2021
 
 
 ## References and thanks to
