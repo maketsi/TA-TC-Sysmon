@@ -1,0 +1,4 @@
+id,alert_type,severity
+IMAGE_LOAD,alert,"medium"
+GetConfigurationOptions,alert,"medium"
+*,alert,"high"

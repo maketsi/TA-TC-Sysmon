@@ -1,0 +1,33 @@
+signature_id,reply_code_id,action,reply_code
+22,0,success,No Error
+22,5,failure,Access is denied
+22,8,failure,Not enough memory
+22,13,failure,Invalid data
+22,14,failure,Out of memory
+22,53,failure,Network path not found
+22,64,failure,Network name deleted
+22,123,failure,Invalid name syntax
+22,1214,failure,Invalid name format
+22,1223,failure,Cancelled by user
+22,1225,failure,Network connection refused
+22,1231,failure,Network unreachable
+22,1232,failure,Network host unreachable
+22,1236,failure,Connection aborted
+22,1460,failure,Timeout period expired
+22,4312,failure,Object not found
+22,9001,failure,Server unable to interpret format
+22,9002,failure,Server Failure
+22,9003,failure,Name does not exist
+22,9004,failure,Request not supported by name server
+22,9005,failure,Refused
+22,9501,failure,No records found
+22,9502,failure,Bad packet
+22,9560,failure,Name contains an invalid character
+22,9701,failure,Record does not exist
+22,9702,failure,Record format error
+22,9852,failure,No DNS servers configured for local system
+22,10022,failure,Invalid argument supplied
+22,10051,failure,Network unreachable
+22,10054,failure,Connection closed by remote host
+22,10060,failure,Timeout waiting for response
+22,*,failure,Generic error

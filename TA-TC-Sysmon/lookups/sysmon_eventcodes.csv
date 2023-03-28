@@ -1,0 +1,30 @@
+EventCode,EventDescription,action,datamodel
+1,Process Created,started,Endpoint.Processes
+2,File Create Time Changed,modified,Endpoint.Filesystem
+3,Network Connect,allowed,Network_Traffic.All_Traffic
+4,Sysmon Started or Stopped,-,Endpoint.Services
+5,Process Terminated,stopped,Endpoint.Processes
+6,Driver Loaded,driver_loaded,Endpoint.Services
+7,Image Loaded,image_loaded,Endpoint.Processes
+8,Create Remote Thread,create_remote_thread,Endpoint.Processes
+9,Raw Access Read,read,Endpoint.Filesystem
+10,Process Access,process_access,Endpoint.Processes
+11,File Created,created,Endpoint.Filesystem
+12,Registry object added or deleted,-,Endpoint.Registry
+13,Registry value set,modified,Endpoint.Registry
+14,Registry object renamed,renamed,Endpoint.Registry
+15,File stream created,created,Endpoint.Filesystem
+16,Sysmon Configuration Changed,modified,Endpoint.Services
+17,Pipe Created,pipe_created,Endpoint.Processes
+18,Pipe Connected,pipe_connected,Endpoint.Processes
+19,WmiEventFilter registered,created,Change.Endpoint_Changes
+20,WmiEventConsumer registered,created,Change.Endpoint_Changes
+21,WmiEventConsumer binds to WmiEventFilter,created,Change.Endpoint_Changes
+22,DNS query,allowed,Network_Resolution.DNS
+23,File deleted and archived,deleted,Endpoint.Filesystem
+24,Clipboard changed,clipboard_modified,Endpoint.Processes
+25,Process image tampering,modified,Endpoint.Processes
+26,File deleted,deleted,Endpoint.Filesystem
+27,Executable file creation blocked,blocked,Endpoint.Filesystem
+28,File shredding blocked,blocked,Endpoint.Filesystem
+255,Sysmon error,alert,"Alerts.Alerts,Endpoint.Services"

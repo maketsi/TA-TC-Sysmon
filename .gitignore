@@ -1,7 +1,7 @@
 *~
 *.bak
-local/*
-metadata/local.meta
+TA-TC-Sysmon/local/*
+TA-TC-Sysmon/metadata/local.meta
 *.tgz
 *.old
 *.off

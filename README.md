@@ -2,39 +2,55 @@
 
 This addon is a complete rewrite and replacement of TA-Microsoft-Sysmon [1] and adds:
 
-* speed-optimized searches via custom eventtypes and macros (tc_sysmon*) that are not just based on (very slow) EventID based searches. 
-* workarounds that protect from props hijack done by Splunk_TA_windows 6.0.0, avoiding sourcetype rename and further extra processing of generic wineventlog props (providing no value).
-* index-time operation that removes the extra (and static) header garbage caused by WinEventLog input that does not provide any value for sysmon logs, saving up to 50% of license usage and I/O load. (*)
-* index-time sourcetyping to further optimize and categorize the events to sourcetype=sysmon:events:*
+* speed-optimized searches via custom eventtypes and macros (tc_sysmon*) that
+  are not just based on (very slow) EventID based searches. 
+* workarounds that protect from props hijack done by Splunk_TA_windows 6.0.0,
+  avoiding sourcetype rename and further extra processing of generic wineventlog
+  props (providing no value).
+* index-time operation that removes the extra (and static) header garbage caused
+  by WinEventLog input that does not provide any value for sysmon logs, saving
+  up to 50% of license usage and I/O load. (*)
+* index-time sourcetyping to further optimize and categorize the events to
+  sourcetype=sysmon:events:*
+* sane action values for all event types for better datamodeling, not just using
+  useless "allowed" value.
 
 
 ## Sysmon support
 
-This addon is up-to-date with Sysmon 13.0, supporting all its event types. Further upgrades are needed if new event IDs are introduced.
+This addon is up-to-date with Sysmon 14.13, supporting all its event types.
+Further upgrades are needed if new event IDs are introduced.
 
 
 ## Relation to TA-TC-Sysmon-Transforms
 
-All index-time operations mentioned above are optional, allthough recommended, and have been moved to (minimized) TA-TC-Sysmon-Transforms package, to be placed on heavy forwarders or indexers, which ever receives the traffic first from agents.
+TA-TC-Sysmon-Transforms (not included) addon is a supplemental addon for
+TA-TC-Sysmon and provides index-time operations, meant to be placed on Splunk
+heavy forwarder (HF) nodes or indexers, which ever receives the traffic first
+from splunk agents. Usage of the transforming addon is highly encouraged.
 
-The parent package TA-TC-Sysmon contains the search-time knowledge objects, and is meant to be placed in search heads.
+This parent package TA-TC-Sysmon contains the search-time knowledge objects, and
+is meant to be placed on search heads.
 
-Original events are expected to have sourcetype XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+Original events are expected to have sourcetype
+XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
 
-If the index-time transform is not done, this package will rename the sourcetype locally to sysmon:events, for optimization reasons.
+If the index-time transform is not done, this package will rename the sourcetype
+locally to sysmon:events.
 
 
 ## Compatibility with Splunk CIM 
 
-This is mostly compatible with Splunk CIM framework, with the following exception(s):
-
-* process_path and file_path fields contain just the file path, excluding the file name, enabling ability to do directory statistics and analysis. You can get the full file path by concatenating this with 'process'.
-* process = just the file name
+This addon is fully compatible with Splunk CIM version 5.1 when used with
+TA-TC-Sysmon-Transforms addon. See lookups/sysmon_eventcodes.csv for information
+on what events are mapped to what CIM datamodels. All events except ID 24
+"Clipboard changed" are currently mapped to a CIM datamodel.
 
 
 ## Sourcetypes
 
-If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (recommended), the following sourcetypes will be created:
+If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers
+(recommended), the following sourcetypes will be created:
 
 * EventID 1: "sysmon:events:processcreated"
 * EventID 2: "sysmon:events:filectimechanged"
@@ -61,6 +77,9 @@ If the supplemental addon TA-TC-Sysmon-Transforms is installed on HF/indexers (r
 * EventID 23: "sysmon:events:filedeleted"
 * EventID 24: "sysmon:events:clipboardchanged"
 * EventID 25: "sysmon:events:processtampering"
+* EventID 26: "sysmon:events:filedeletedlog"
+* EventID 27: "sysmon:events:fileblockexecutable"
+* EventID 28: "sysmon:events:fileblockshredding"
 * EventID 255: "sysmon:events:error"
 * All the rest (new unknowns): "sysmon:events"
 
@@ -69,7 +88,8 @@ The addon works also with legacy data, with and without the Windows TA.
 
 ## Macros
 
-These macros will efficiently search for the data and are not just based on slow signature_id/EventID search:
+These macros will efficiently search for the data and are not just based on slow
+signature_id/EventID search:
 
 * \`tc_sysmon\`
 * \`tc_sysmon_process_created\`
@@ -104,19 +124,21 @@ Example usage:
 
 * \`tc_sysmon\` host=foobar 
 
-These macros search sysmon data from all indexes by default. It is recommended to further optimize these by explicitly setting the
-index(es) to use in \`tc_sysmon_indexes\` macro, or by changing it to use a lookup that automatically generates
-the index list via tstats in advance. 
+These macros search sysmon data from all indexes by default. It is recommended
+to further optimize these by explicitly setting the index(es) to use in
+\`tc_sysmon_indexes\` macro, or by changing it to use a lookup that
+automatically generates the index list via tstats in advance. 
 
 
 
 ## Author
 
-Markku Parviainen, 2019-2021
+Markku Parviainen, 2019-2023
 
 
 ## References and thanks to
 
 [1] https://github.com/splunk/TA-microsoft-sysmon
 
-DNS response code signatures are based on https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+DNS response code signatures are based on
+https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
